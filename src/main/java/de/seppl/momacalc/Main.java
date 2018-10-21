@@ -24,6 +24,7 @@ import de.seppl.momacalc.domain.TyreType;
 import de.seppl.momacalc.domain.TyreWear;
 
 public class Main {
+
     public static void main(String[] args) {
         System.out.println(String.format("init service with: '%s'...", StringUtils.join(args, " ")));
 

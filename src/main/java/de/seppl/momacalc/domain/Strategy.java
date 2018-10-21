@@ -1,6 +1,10 @@
 package de.seppl.momacalc.domain;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
@@ -15,9 +19,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Strategy {
 
     private final Collection<Session> sessions;
+    private final int totalTyreCount;
 
-    public Strategy(Collection<Session> sessions) {
+    public Strategy(Collection<Session> sessions, int totalTyreCount) {
         this.sessions = checkNotNull(sessions);
+        this.totalTyreCount = totalTyreCount;
     }
 
     public Collection<Session> sessions() {
@@ -26,15 +32,30 @@ public class Strategy {
 
     public Collection<TyreType> tyreTypes() {
         return sessions.stream() //
-                .map(Session::tyres) //
+                .map(Session::tyreTypes) //
                 .flatMap(Collection::stream) //
-                .map(Tyre::type) //
-                .sorted((a, b) -> a.ordinal() - b.ordinal()) //
+                .sorted() //
                 .collect(toList());
     }
 
     public String formattedTyreTypes() {
-        return tyreTypes().stream() //
+        // anteilsmässig erhöhen bis auf total tyrecount
+        List<Integer> tyres = tyreTypes().stream() //
+                .distinct() //
+                .map(type -> {
+                    long typeCount = tyreTypes().stream() //
+                            .filter(tType -> tType == type) //
+                            .count();
+                    return typeCount;
+                }) //
+                .map(Long::intValue) //
+                .collect(toList());
+
+        MathContext mc = new MathContext(0, RoundingMode.HALF_UP);
+        BigDecimal summe = new BigDecimal(tyres.stream().reduce(0, (a, b) -> a + b));
+        tyres.stream().map(tyre -> new BigDecimal(tyre).divide(summe)).collect(to);
+
+        return "needed tyres: " + tyreTypes().stream() //
                 .distinct() //
                 .map(type -> {
                     long typeCount = tyreTypes().stream() //

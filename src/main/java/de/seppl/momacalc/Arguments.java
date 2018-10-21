@@ -22,6 +22,10 @@ public class Arguments {
         return new MandatoryArgument<>("-r", this::argToInt);
     }
 
+    public Argument<Integer> tyreCount() {
+        return new OptionalArgument<>("-tc", this::argToInt, 0);
+    }
+
     public Argument<SortedSet<TyreType>> tyreTypes() {
         return new OptionalArgument<>("-tt", this::argToTyreTypes,
                 new TreeSet<TyreType>(Arrays.asList(TyreType.SOFT, TyreType.MEDIUM, TyreType.HARD)));

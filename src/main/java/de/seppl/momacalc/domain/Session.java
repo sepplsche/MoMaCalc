@@ -14,30 +14,37 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Session {
 
     private final SessionType type;
-    private final List<Tyre> tyres;
+    private final List<TyreType> tyreTypes;
 
-    public Session(SessionType type, List<Tyre> tyres) {
+    public Session(SessionType type, List<TyreType> tyreTypes) {
         this.type = checkNotNull(type);
-        this.tyres = tyres;
-        checkArgument(!tyres.isEmpty());
+        this.tyreTypes = tyreTypes;
+        checkArgument(!tyreTypes.isEmpty());
     }
 
     public SessionType type() {
         return type;
     }
 
-    public List<Tyre> tyres() {
-        return tyres;
+    public List<TyreType> tyreTypes() {
+        return tyreTypes;
+    }
+
+    public String formattedTyreTypes() {
+        return "tyres for session " + type + ": "
+                + tyreTypes.stream() //
+                        .map(TyreType::abr) //
+                        .reduce("", (a, b) -> a + " " + b);
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).addValue(type).addValue(tyres).toString();
+        return MoreObjects.toStringHelper(this).addValue(type).addValue(tyreTypes).toString();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, tyres);
+        return Objects.hash(type, tyreTypes);
     }
 
     @Override
@@ -50,6 +57,6 @@ public class Session {
         }
         Session other = (Session) obj;
         return type.equals(other.type()) //
-                && tyres.equals(other.tyres());
+                && tyreTypes.equals(other.tyreTypes());
     }
 }

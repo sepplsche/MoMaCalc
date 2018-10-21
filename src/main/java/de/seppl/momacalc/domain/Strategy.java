@@ -2,14 +2,15 @@ package de.seppl.momacalc.domain;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ComparisonChain;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,29 +41,42 @@ public class Strategy {
 
     public String formattedTyreTypes() {
         // anteilsmässig erhöhen bis auf total tyrecount
-        List<Integer> tyres = tyreTypes().stream() //
+        List<TyreTypeCount> tyres = tyreTypes().stream() //
                 .distinct() //
                 .map(type -> {
-                    long typeCount = tyreTypes().stream() //
+                    long count = tyreTypes().stream() //
                             .filter(tType -> tType == type) //
                             .count();
-                    return typeCount;
+                    return new TyreTypeCount(type, Long.valueOf(count).intValue());
                 }) //
-                .map(Long::intValue) //
                 .collect(toList());
 
-        MathContext mc = new MathContext(0, RoundingMode.HALF_UP);
-        BigDecimal summe = new BigDecimal(tyres.stream().reduce(0, (a, b) -> a + b));
-        tyres.stream().map(tyre -> new BigDecimal(tyre).divide(summe)).collect(to);
+        int summe = tyres.stream().map(TyreTypeCount::count).reduce(0, (a, b) -> a + b);
 
-        return "needed tyres: " + tyreTypes().stream() //
-                .distinct() //
-                .map(type -> {
-                    long typeCount = tyreTypes().stream() //
-                            .filter(tType -> tType == type) //
-                            .count();
-                    return typeCount + type.abr();
+        BigDecimal faktor = new BigDecimal(totalTyreCount).divide(new BigDecimal(summe), new MathContext(24));
+        List<TyreTypeCount> anteilTyres = tyres.stream() //
+                .map(tyre -> {
+                    int anteilCount =
+                            faktor.multiply(new BigDecimal(tyre.count())).round(new MathContext(0)).intValue();
+                    return new TyreTypeCount(tyre.type, anteilCount);
                 }) //
+                .collect(toList());
+
+        int diff = totalTyreCount - anteilTyres.stream().map(TyreTypeCount::count).reduce(0, (a, b) -> a + b);
+        if (diff > 0) {
+            TyreTypeCount min = anteilTyres.stream().sorted().findFirst().get();
+            TyreTypeCount diffCount = new TyreTypeCount(min.type, min.count() + diff);
+            anteilTyres.remove(min);
+            anteilTyres.add(diffCount);
+        } else {
+            TyreTypeCount max = anteilTyres.stream().sorted(Collections.reverseOrder()).findFirst().get();
+            TyreTypeCount diffCount = new TyreTypeCount(max.type, max.count() + diff);
+            anteilTyres.remove(max);
+            anteilTyres.add(diffCount);
+        }
+
+        return "needed tyres: " + anteilTyres.stream() //
+                .map(TyreTypeCount::formatted) //
                 .reduce("", (a, b) -> a + " " + b);
     }
 
@@ -86,5 +100,40 @@ public class Strategy {
         }
         Strategy other = (Strategy) obj;
         return sessions == other.sessions;
+    }
+
+    public static class TyreTypeCount implements Comparable<TyreTypeCount> {
+
+        private final TyreType type;
+        private final int count;
+
+        public TyreTypeCount(TyreType type, int count) {
+            this.type = checkNotNull(type);
+            this.count = count;
+        }
+
+        public int count() {
+            return count;
+        }
+
+        public String formatted() {
+            return count + type.abr();
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this) //
+                    .addValue(count) //
+                    .addValue(type) //
+                    .toString();
+        }
+
+        @Override
+        public int compareTo(TyreTypeCount o) {
+            return ComparisonChain.start() //
+                    .compare(count, o.count) //
+                    .compare(type, o.type) //
+                    .result();
+        }
     }
 }

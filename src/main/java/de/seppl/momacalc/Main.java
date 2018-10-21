@@ -43,6 +43,7 @@ public class Main {
         strategies.forEach(strategy -> {
             System.out.println("Strategy for driver " + counter.incrementAndGet() + ": ");
             System.out.println(strategy.formattedTyreTypes());
+            System.out.println(strategy.formattedTotalTyreTypes());
             strategy.sessions().stream() //
                     .sorted((a, b) -> a.type().compareTo(b.type())) //
                     .map(Session::formattedTyreTypes) //

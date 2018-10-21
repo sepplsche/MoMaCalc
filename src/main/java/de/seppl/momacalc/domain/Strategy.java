@@ -40,6 +40,23 @@ public class Strategy {
     }
 
     public String formattedTyreTypes() {
+        List<TyreTypeCount> tyres = tyreTypes().stream() //
+                .distinct() //
+                .map(type -> {
+                    long count = tyreTypes().stream() //
+                            .filter(tType -> tType == type) //
+                            .count();
+                    return new TyreTypeCount(type, Long.valueOf(count).intValue());
+                }) //
+                .collect(toList());
+
+        return "needed tyres: " + tyres.stream() //
+                .sorted((a, b) -> a.type.compareTo(b.type)) //
+                .map(TyreTypeCount::formatted) //
+                .reduce("", (a, b) -> a + " " + b);
+    }
+
+    public String formattedTotalTyreTypes() {
         // anteilsmässig erhöhen bis auf total tyrecount
         List<TyreTypeCount> tyres = tyreTypes().stream() //
                 .distinct() //
@@ -75,7 +92,8 @@ public class Strategy {
             anteilTyres.add(diffCount);
         }
 
-        return "needed tyres: " + anteilTyres.stream() //
+        return "total tyres: " + anteilTyres.stream() //
+                .sorted((a, b) -> a.type.compareTo(b.type)) //
                 .map(TyreTypeCount::formatted) //
                 .reduce("", (a, b) -> a + " " + b);
     }

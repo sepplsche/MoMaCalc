@@ -33,6 +33,7 @@ public class Session {
     public String formattedTyreTypes() {
         return "tyres for session " + type + ": "
                 + tyreTypes.stream() //
+                        .sorted() //
                         .map(TyreType::abr) //
                         .reduce("", (a, b) -> a + " " + b);
     }

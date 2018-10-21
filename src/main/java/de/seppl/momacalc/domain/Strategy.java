@@ -5,13 +5,17 @@ import java.math.MathContext;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -21,14 +25,30 @@ public class Strategy {
 
     private final Collection<Session> sessions;
     private final int totalTyreCount;
+    private final Set<Tyre> tyres;
 
-    public Strategy(Collection<Session> sessions, int totalTyreCount) {
+    public Strategy(Collection<Session> sessions, int totalTyreCount, Set<Tyre> tyres) {
         this.sessions = checkNotNull(sessions);
         this.totalTyreCount = totalTyreCount;
+        this.tyres = tyres;
+        checkArgument(!tyres.isEmpty());
     }
 
     public Collection<Session> sessions() {
         return sessions;
+    }
+
+    public Session session(SessionType type) {
+        return sessions.stream() //
+                .filter(session -> session.type() == type) //
+                .findFirst().get();
+    }
+
+    public int raceRounds() {
+        Map<TyreType, TyreWear> wearByType = tyres.stream().collect(toMap(Tyre::type, Tyre::wear));
+        return session(SessionType.RACE).tyreTypes().stream() //
+                .map(wearByType::get) //
+                .map(TyreWear::runden).reduce(0, (a, b) -> a + b);
     }
 
     public Collection<TyreType> tyreTypes() {

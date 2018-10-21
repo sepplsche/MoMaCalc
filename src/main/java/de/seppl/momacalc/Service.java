@@ -26,19 +26,25 @@ import de.seppl.momacalc.domain.TyreWear;
  */
 public class Service {
 
-    private final Collection<Collection<Tyre>> superTyres;
+    private final Collection<Set<Tyre>> superTyres;
+    private final int runden;
     private final int count;
 
-    public Service(Collection<Collection<Tyre>> superTyres, int count) {
+    public Service(Collection<Set<Tyre>> superTyres, int runden, int count) {
         this.superTyres = superTyres;
+        this.runden = runden;
         this.count = count;
         checkArgument(!superTyres.isEmpty());
         checkArgument(!superTyres.iterator().next().isEmpty());
     }
 
-    public Collection<Strategy> strategies(int runden) {
-        Collection<Strategy> strategies = superTyres.stream() //
-                .map(tyres -> strategy(runden, tyres)) //
+    public int runden() {
+        return runden;
+    }
+
+    public List<Strategy> strategies(int rundenSparen) {
+        List<Strategy> strategies = superTyres.stream() //
+                .map(tyres -> strategy(rundenSparen, tyres)) //
                 .collect(toList());
 
         List<TyreType> tTypes = strategies.stream() //
@@ -62,10 +68,9 @@ public class Service {
         return strategies;
     }
 
-    private Strategy strategy(int runden, Collection<Tyre> tyres) {
-
+    private Strategy strategy(int rundenSparen, Set<Tyre> tyres) {
         TyreType qTyre = qTyreType(tyres);
-        List<TyreType> rTyres = rTyres(Optional.empty(), new ArrayList<Tyre>(), runden, tyres).stream() //
+        List<TyreType> rTyres = rTyres(Optional.empty(), new ArrayList<Tyre>(), rundenSparen, tyres).stream() //
                 .map(Tyre::type) //
                 .collect(toList());
         List<TyreType> tTyres = tTyreType(tyres, qTyre, rTyres);
@@ -75,7 +80,7 @@ public class Service {
         sessions.add(new Session(SessionType.RACE, rTyres));
         sessions.add(new Session(SessionType.TRAINING, tTyres));
 
-        return new Strategy(sessions, count);
+        return new Strategy(sessions, count, tyres);
     }
 
     private TyreType qTyreType(Collection<Tyre> tyres) {
@@ -89,30 +94,17 @@ public class Service {
     // auf jeder ebene gibts tyres.size() (3) möglichkeiten
     // der kürzeste weg der am nächsten an 0 rankommt wird genommen,
     // wenns mehrere gibt, dann der mit den meisten weichsten reifen
-    private List<Tyre> rTyres(Optional<Tyre> lastTyre, List<Tyre> strategy, int runden, Collection<Tyre> tyres) {
+    private List<Tyre> rTyres(Optional<Tyre> lastTyre, List<Tyre> strategy, int rundenSparen, Collection<Tyre> tyres) {
         lastTyre.ifPresent(strategy::add);
         int strategyRunden = strategy.stream() //
                 .map(Tyre::wear) //
                 .map(TyreWear::runden) //
                 .reduce(0, (a, b) -> a + b);
-        if (strategy.size() >= 10 || strategyRunden >= runden) {
+        if (strategy.size() >= 10 || strategyRunden >= runden - rundenSparen) {
             return strategy;
         }
-
-        // List<List<Tyre>> strats = tyres.stream() //
-        // .map(tyre -> rTyres(Optional.of(tyre), new ArrayList<>(strategy), runden, tyres)) //
-        // .collect(toList());
-        //
-        // System.out.println("step");
-        // strats.stream() //
-        // .distinct() //
-        // .forEach(strat -> {
-        // strat.forEach(System.out::print);
-        // System.out.println();
-        // });
-
         return tyres.stream() //
-                .map(tyre -> rTyres(Optional.of(tyre), new ArrayList<>(strategy), runden, tyres)) //
+                .map(tyre -> rTyres(Optional.of(tyre), new ArrayList<>(strategy), rundenSparen, tyres)) //
                 .sorted((a, b) -> ComparisonChain.start() //
                         .compare(a.size(), b.size()) //
                         .compare(tyreTypes(a), tyreTypes(b)) //

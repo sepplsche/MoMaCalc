@@ -49,8 +49,8 @@ public class Main {
             System.out.println("=================================");
 
             driverStrats.forEach(strategy -> {
-                int diffRounds = service.runden() - strategy.raceRounds();
-                System.out.println("Strategy with " + diffRounds + " Runden zu wenig");
+                int diffRounds = strategy.raceRounds() - service.runden();
+                System.out.println("Strategy with " + diffRounds + " rounds spare");
                 System.out.println("---------------------------------");
                 System.out.println(strategy.formattedTyreTypes());
                 System.out.println(strategy.formattedTotalTyreTypes());

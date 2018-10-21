@@ -1,4 +1,4 @@
-package de.seppl.momacalc.domain;
+package de.seppl.momacalc.domain.session;
 
 import java.util.List;
 import java.util.Objects;
@@ -7,6 +7,8 @@ import com.google.common.base.MoreObjects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import de.seppl.momacalc.domain.tyre.TyreType;
 
 /**
  * @author Seppl

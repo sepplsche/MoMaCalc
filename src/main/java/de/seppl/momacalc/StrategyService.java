@@ -14,28 +14,28 @@ import com.google.common.collect.ComparisonChain;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import de.seppl.momacalc.domain.Session;
-import de.seppl.momacalc.domain.SessionType;
 import de.seppl.momacalc.domain.Strategy;
-import de.seppl.momacalc.domain.Tyre;
-import de.seppl.momacalc.domain.TyreType;
-import de.seppl.momacalc.domain.TyreWear;
+import de.seppl.momacalc.domain.session.Session;
+import de.seppl.momacalc.domain.session.SessionType;
+import de.seppl.momacalc.domain.tyre.Tyre;
+import de.seppl.momacalc.domain.tyre.TyreType;
+import de.seppl.momacalc.domain.tyre.TyreWear;
 
 /**
  * @author Seppl
  */
-public class Service {
+public class StrategyService {
 
-    private final Collection<Set<Tyre>> superTyres;
+    private final Collection<Set<Tyre>> driverTyres;
     private final int runden;
     private final int count;
 
-    public Service(Collection<Set<Tyre>> superTyres, int runden, int count) {
-        this.superTyres = superTyres;
+    public StrategyService(Collection<Set<Tyre>> driverTyres, int runden, int count) {
+        this.driverTyres = driverTyres;
         this.runden = runden;
         this.count = count;
-        checkArgument(!superTyres.isEmpty());
-        checkArgument(!superTyres.iterator().next().isEmpty());
+        checkArgument(!driverTyres.isEmpty());
+        checkArgument(!driverTyres.iterator().next().isEmpty());
     }
 
     public int runden() {
@@ -43,7 +43,7 @@ public class Service {
     }
 
     public List<Strategy> strategies(int rundenSparen) {
-        List<Strategy> strategies = superTyres.stream() //
+        List<Strategy> strategies = driverTyres.stream() //
                 .map(tyres -> strategy(rundenSparen, tyres)) //
                 .collect(toList());
 

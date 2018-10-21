@@ -18,6 +18,12 @@ import com.google.common.collect.ComparisonChain;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import de.seppl.momacalc.domain.session.Session;
+import de.seppl.momacalc.domain.session.SessionType;
+import de.seppl.momacalc.domain.tyre.Tyre;
+import de.seppl.momacalc.domain.tyre.TyreType;
+import de.seppl.momacalc.domain.tyre.TyreWear;
+
 /**
  * @author Seppl
  */

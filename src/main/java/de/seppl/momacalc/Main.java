@@ -17,22 +17,22 @@ import org.apache.commons.lang.StringUtils;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import de.seppl.momacalc.argument.ArgumentParser;
-import de.seppl.momacalc.domain.Session;
 import de.seppl.momacalc.domain.Strategy;
-import de.seppl.momacalc.domain.Tyre;
-import de.seppl.momacalc.domain.TyreType;
-import de.seppl.momacalc.domain.TyreWear;
+import de.seppl.momacalc.domain.session.Session;
+import de.seppl.momacalc.domain.tyre.Tyre;
+import de.seppl.momacalc.domain.tyre.TyreType;
+import de.seppl.momacalc.domain.tyre.TyreWear;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println(String.format("init service with: '%s'...", StringUtils.join(args, " ")));
 
-        Service service = initService(args);
+        StrategyService service = initService(args);
         calc(service);
     }
 
-    private static void calc(Service service) {
+    private static void calc(StrategyService service) {
         List<List<Strategy>> strategies = IntStream.of(-2, 0, 2) //
                 .mapToObj(service::strategies) //
                 .collect(toList());
@@ -64,7 +64,7 @@ public class Main {
         });
     }
 
-    private static Service initService(String[] args) {
+    private static StrategyService initService(String[] args) {
         Arguments arguments = new Arguments();
         ArgumentParser argsParser = new ArgumentParser(args);
 
@@ -76,17 +76,17 @@ public class Main {
         checkArgument(wears.size() % types.size() == 0,
                 "Es müssen entsprechend viele Wears angegeben werden, wie Types!");
 
-        Collection<Set<Tyre>> tyres = new ArrayList<>();
+        Collection<Set<Tyre>> driverTyres = new ArrayList<>();
         for (int i = 0; i < wears.size(); i = i + 3) {
             Iterator<TyreType> iterator = types.iterator();
             int j = 0;
-            Set<Tyre> innerTyres = new HashSet<>();
+            Set<Tyre> tyres = new HashSet<>();
             while (iterator.hasNext()) {
-                innerTyres.add(new Tyre(iterator.next(), wears.get(i + j)));
+                tyres.add(new Tyre(iterator.next(), wears.get(i + j)));
                 j++;
             }
-            tyres.add(innerTyres);
+            driverTyres.add(tyres);
         }
-        return new Service(tyres, runden, count);
+        return new StrategyService(driverTyres, runden, count);
     }
 }

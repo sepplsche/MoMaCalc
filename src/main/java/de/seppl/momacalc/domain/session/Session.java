@@ -8,7 +8,7 @@ import com.google.common.base.MoreObjects;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import de.seppl.momacalc.domain.tyre.TireType;
+import de.seppl.momacalc.domain.tire.TireType;
 
 /**
  * @author Seppl

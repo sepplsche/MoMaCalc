@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 
 import de.seppl.momacalc.Arguments;
 import de.seppl.momacalc.argument.Argument.MandatoryArgument;
-import de.seppl.momacalc.domain.tyre.TireWear;
+import de.seppl.momacalc.domain.tire.TireWear;
 
 public class ArgumentParserTest {
 

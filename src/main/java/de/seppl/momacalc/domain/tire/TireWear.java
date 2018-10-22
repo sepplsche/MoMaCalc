@@ -1,4 +1,4 @@
-package de.seppl.momacalc.domain.tyre;
+package de.seppl.momacalc.domain.tire;
 
 import java.util.Objects;
 

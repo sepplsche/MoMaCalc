@@ -13,8 +13,8 @@ import static java.util.stream.Collectors.toSet;
 import de.seppl.momacalc.argument.Argument;
 import de.seppl.momacalc.argument.Argument.MandatoryArgument;
 import de.seppl.momacalc.argument.Argument.OptionalArgument;
-import de.seppl.momacalc.domain.tyre.TireType;
-import de.seppl.momacalc.domain.tyre.TireWear;
+import de.seppl.momacalc.domain.tire.TireType;
+import de.seppl.momacalc.domain.tire.TireWear;
 
 public class Arguments {
 

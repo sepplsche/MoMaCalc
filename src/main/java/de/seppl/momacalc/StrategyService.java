@@ -17,9 +17,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import de.seppl.momacalc.domain.Strategy;
 import de.seppl.momacalc.domain.session.Session;
 import de.seppl.momacalc.domain.session.SessionType;
-import de.seppl.momacalc.domain.tyre.Tire;
-import de.seppl.momacalc.domain.tyre.TireType;
-import de.seppl.momacalc.domain.tyre.TireWear;
+import de.seppl.momacalc.domain.tire.Tire;
+import de.seppl.momacalc.domain.tire.TireType;
+import de.seppl.momacalc.domain.tire.TireWear;
 
 /**
  * @author Seppl

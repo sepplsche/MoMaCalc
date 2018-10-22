@@ -9,7 +9,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @author Seppl
  */
-public class Tire {
+public class Tire implements Comparable<Tire> {
 
     private final TireType type;
     private final TireWear wear;
@@ -25,6 +25,10 @@ public class Tire {
 
     public TireWear wear() {
         return wear;
+    }
+
+    public String formatted() {
+        return String.format("%s (%d)", type.abr(), wear.runden());
     }
 
     @Override
@@ -48,5 +52,10 @@ public class Tire {
         Tire other = (Tire) obj;
         return type.equals(other.type) //
                 && wear.equals(other.wear);
+    }
+
+    @Override
+    public int compareTo(Tire o) {
+        return type.compareTo(o.type);
     }
 }

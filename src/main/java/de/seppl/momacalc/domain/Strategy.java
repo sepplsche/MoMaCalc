@@ -5,17 +5,13 @@ import java.math.MathContext;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import de.seppl.momacalc.domain.session.Session;
@@ -31,13 +27,10 @@ public class Strategy {
 
     private final Collection<Session> sessions;
     private final int totalTireCount;
-    private final Set<Tire> tires;
 
-    public Strategy(Collection<Session> sessions, int totalTireCount, Set<Tire> tires) {
+    public Strategy(Collection<Session> sessions, int totalTireCount) {
         this.sessions = checkNotNull(sessions);
         this.totalTireCount = totalTireCount;
-        this.tires = tires;
-        checkArgument(!tires.isEmpty());
     }
 
     public Collection<Session> sessions() {
@@ -51,16 +44,17 @@ public class Strategy {
     }
 
     public int raceRounds() {
-        Map<TireType, TireWear> wearByType = tires.stream().collect(toMap(Tire::type, Tire::wear));
-        return session(SessionType.RACE).tireTypes().stream() //
-                .map(wearByType::get) //
-                .map(TireWear::runden).reduce(0, (a, b) -> a + b);
+        return session(SessionType.RACE).tires().stream() //
+                .map(Tire::wear) //
+                .map(TireWear::runden) //
+                .reduce(0, (a, b) -> a + b);
     }
 
     public Collection<TireType> tireTypes() {
         return sessions.stream() //
-                .map(Session::tireTypes) //
+                .map(Session::tires) //
                 .flatMap(Collection::stream) //
+                .map(Tire::type) //
                 .sorted() //
                 .collect(toList());
     }

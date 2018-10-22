@@ -62,7 +62,7 @@ public class Main {
                 System.out.println();
                 strategy.sessions().stream() //
                         .sorted((a, b) -> a.type().compareTo(b.type())) //
-                        .map(Session::formattedTireTypes) //
+                        .map(Session::formattedTires) //
                         .forEach(System.out::println);
             });
             System.out.println();

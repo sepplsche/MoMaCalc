@@ -8,7 +8,7 @@ import com.google.common.base.MoreObjects;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import de.seppl.momacalc.domain.tyre.TyreType;
+import de.seppl.momacalc.domain.tyre.TireType;
 
 /**
  * @author Seppl
@@ -16,38 +16,38 @@ import de.seppl.momacalc.domain.tyre.TyreType;
 public class Session {
 
     private final SessionType type;
-    private final List<TyreType> tyreTypes;
+    private final List<TireType> tireTypes;
 
-    public Session(SessionType type, List<TyreType> tyreTypes) {
+    public Session(SessionType type, List<TireType> tireTypes) {
         this.type = checkNotNull(type);
-        this.tyreTypes = tyreTypes;
-        checkArgument(!tyreTypes.isEmpty());
+        this.tireTypes = tireTypes;
+        checkArgument(!tireTypes.isEmpty());
     }
 
     public SessionType type() {
         return type;
     }
 
-    public List<TyreType> tyreTypes() {
-        return tyreTypes;
+    public List<TireType> tireTypes() {
+        return tireTypes;
     }
 
-    public String formattedTyreTypes() {
+    public String formattedTireTypes() {
         return "tyres for session " + type + ": "
-                + tyreTypes.stream() //
+                + tireTypes.stream() //
                         .sorted() //
-                        .map(TyreType::abr) //
+                        .map(TireType::abr) //
                         .reduce("", (a, b) -> a + " " + b);
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).addValue(type).addValue(tyreTypes).toString();
+        return MoreObjects.toStringHelper(this).addValue(type).addValue(tireTypes).toString();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, tyreTypes);
+        return Objects.hash(type, tireTypes);
     }
 
     @Override
@@ -60,6 +60,6 @@ public class Session {
         }
         Session other = (Session) obj;
         return type.equals(other.type()) //
-                && tyreTypes.equals(other.tyreTypes());
+                && tireTypes.equals(other.tireTypes());
     }
 }

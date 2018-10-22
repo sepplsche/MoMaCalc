@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 
 import de.seppl.momacalc.Arguments;
 import de.seppl.momacalc.argument.Argument.MandatoryArgument;
-import de.seppl.momacalc.domain.tyre.TyreWear;
+import de.seppl.momacalc.domain.tyre.TireWear;
 
 public class ArgumentParserTest {
 
@@ -51,13 +51,13 @@ public class ArgumentParserTest {
         ArgumentParser parser = new ArgumentParser(args);
         Arguments arguments = new Arguments();
 
-        Collection<TyreWear> tireWears = parser.parse(arguments.tyreWears());
+        Collection<TireWear> tireWears = parser.parse(arguments.tireWears());
         assertThat(tireWears.size(), equalTo(6));
-        assertThat(tireWears.contains(new TyreWear(7)), equalTo(true));
-        assertThat(tireWears.contains(new TyreWear(11)), equalTo(true));
-        assertThat(tireWears.contains(new TyreWear(16)), equalTo(true));
-        assertThat(tireWears.contains(new TyreWear(8)), equalTo(true));
-        assertThat(tireWears.contains(new TyreWear(15)), equalTo(true));
-        assertThat(tireWears.contains(new TyreWear(17)), equalTo(true));
+        assertThat(tireWears.contains(new TireWear(7)), equalTo(true));
+        assertThat(tireWears.contains(new TireWear(11)), equalTo(true));
+        assertThat(tireWears.contains(new TireWear(16)), equalTo(true));
+        assertThat(tireWears.contains(new TireWear(8)), equalTo(true));
+        assertThat(tireWears.contains(new TireWear(15)), equalTo(true));
+        assertThat(tireWears.contains(new TireWear(17)), equalTo(true));
     }
 }

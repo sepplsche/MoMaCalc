@@ -7,11 +7,11 @@ import com.google.common.base.MoreObjects;
 /**
  * @author Seppl
  */
-public class TyreWear {
+public class TireWear {
 
     private final int runden;
 
-    public TyreWear(int runden) {
+    public TireWear(int runden) {
         this.runden = runden;
     }
 
@@ -37,7 +37,7 @@ public class TyreWear {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        TyreWear other = (TyreWear) obj;
+        TireWear other = (TireWear) obj;
         return runden == other.runden;
     }
 }

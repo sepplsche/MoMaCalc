@@ -5,7 +5,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @author Seppl
  */
-public enum TyreType {
+public enum TireType {
+
     ULTRASOFT("u"), //
     SUPERSOFT("ss"), //
     SOFT("s"), //
@@ -14,7 +15,7 @@ public enum TyreType {
 
     private final String abr;
 
-    private TyreType(String abr) {
+    private TireType(String abr) {
         this.abr = checkNotNull(abr);
     }
 

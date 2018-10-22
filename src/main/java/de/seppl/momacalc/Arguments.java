@@ -13,8 +13,8 @@ import static java.util.stream.Collectors.toSet;
 import de.seppl.momacalc.argument.Argument;
 import de.seppl.momacalc.argument.Argument.MandatoryArgument;
 import de.seppl.momacalc.argument.Argument.OptionalArgument;
-import de.seppl.momacalc.domain.tyre.TyreType;
-import de.seppl.momacalc.domain.tyre.TyreWear;
+import de.seppl.momacalc.domain.tyre.TireType;
+import de.seppl.momacalc.domain.tyre.TireWear;
 
 public class Arguments {
 
@@ -22,17 +22,17 @@ public class Arguments {
         return new MandatoryArgument<>("-r", this::argToInt);
     }
 
-    public Argument<Integer> tyreCount() {
+    public Argument<Integer> tireCount() {
         return new OptionalArgument<>("-tc", this::argToInt, 0);
     }
 
-    public Argument<SortedSet<TyreType>> tyreTypes() {
-        return new OptionalArgument<>("-tt", this::argToTyreTypes,
-                new TreeSet<TyreType>(Arrays.asList(TyreType.SOFT, TyreType.MEDIUM, TyreType.HARD)));
+    public Argument<SortedSet<TireType>> tireTypes() {
+        return new OptionalArgument<>("-tt", this::argToTireTypes,
+                new TreeSet<TireType>(Arrays.asList(TireType.SOFT, TireType.MEDIUM, TireType.HARD)));
     }
 
-    public Argument<List<TyreWear>> tyreWears() {
-        return new MandatoryArgument<>("-tw", this::argToTyreWears);
+    public Argument<List<TireWear>> tireWears() {
+        return new MandatoryArgument<>("-tw", this::argToTireWears);
     }
 
     private int argToInt(Collection<String> arg) {
@@ -42,29 +42,29 @@ public class Arguments {
                 .get();
     }
 
-    private SortedSet<TyreType> argToTyreTypes(List<String> args) {
+    private SortedSet<TireType> argToTireTypes(List<String> args) {
         String arg = args.stream().reduce("", (a, b) -> a + b);
-        SortedSet<TyreType> types = new TreeSet<>();
-        if (arg.contains("sss")) {
-            types.add(TyreType.SUPERSOFT);
-            types.add(TyreType.SOFT);
-        } else if (arg.contains("ss")) {
-            types.add(TyreType.SUPERSOFT);
-        } else if (arg.contains("s")) {
-            types.add(TyreType.SOFT);
+        SortedSet<TireType> types = new TreeSet<>();
+        if (arg.toLowerCase().contains("sss")) {
+            types.add(TireType.SUPERSOFT);
+            types.add(TireType.SOFT);
+        } else if (arg.toLowerCase().contains("ss")) {
+            types.add(TireType.SUPERSOFT);
+        } else if (arg.toLowerCase().contains("s")) {
+            types.add(TireType.SOFT);
         }
-        types.addAll(Stream.of(TyreType.values()) //
-                .filter(type -> type != TyreType.SUPERSOFT) //
-                .filter(type -> type != TyreType.SOFT) //
-                .filter(type -> arg.contains(type.abr())) //
+        types.addAll(Stream.of(TireType.values()) //
+                .filter(type -> type != TireType.SUPERSOFT) //
+                .filter(type -> type != TireType.SOFT) //
+                .filter(type -> arg.toLowerCase().contains(type.abr().toLowerCase())) //
                 .collect(toSet()));
         return types;
     }
 
-    private List<TyreWear> argToTyreWears(List<String> args) {
+    private List<TireWear> argToTireWears(List<String> args) {
         return args.stream() //
                 .map(Integer::parseInt) //
-                .map(TyreWear::new) //
+                .map(TireWear::new) //
                 .collect(toList());
     }
 }

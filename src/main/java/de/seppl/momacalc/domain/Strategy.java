@@ -20,9 +20,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import de.seppl.momacalc.domain.session.Session;
 import de.seppl.momacalc.domain.session.SessionType;
-import de.seppl.momacalc.domain.tyre.Tyre;
-import de.seppl.momacalc.domain.tyre.TyreType;
-import de.seppl.momacalc.domain.tyre.TyreWear;
+import de.seppl.momacalc.domain.tyre.Tire;
+import de.seppl.momacalc.domain.tyre.TireType;
+import de.seppl.momacalc.domain.tyre.TireWear;
 
 /**
  * @author Seppl
@@ -30,14 +30,14 @@ import de.seppl.momacalc.domain.tyre.TyreWear;
 public class Strategy {
 
     private final Collection<Session> sessions;
-    private final int totalTyreCount;
-    private final Set<Tyre> tyres;
+    private final int totalTireCount;
+    private final Set<Tire> tires;
 
-    public Strategy(Collection<Session> sessions, int totalTyreCount, Set<Tyre> tyres) {
+    public Strategy(Collection<Session> sessions, int totalTireCount, Set<Tire> tires) {
         this.sessions = checkNotNull(sessions);
-        this.totalTyreCount = totalTyreCount;
-        this.tyres = tyres;
-        checkArgument(!tyres.isEmpty());
+        this.totalTireCount = totalTireCount;
+        this.tires = tires;
+        checkArgument(!tires.isEmpty());
     }
 
     public Collection<Session> sessions() {
@@ -51,76 +51,76 @@ public class Strategy {
     }
 
     public int raceRounds() {
-        Map<TyreType, TyreWear> wearByType = tyres.stream().collect(toMap(Tyre::type, Tyre::wear));
-        return session(SessionType.RACE).tyreTypes().stream() //
+        Map<TireType, TireWear> wearByType = tires.stream().collect(toMap(Tire::type, Tire::wear));
+        return session(SessionType.RACE).tireTypes().stream() //
                 .map(wearByType::get) //
-                .map(TyreWear::runden).reduce(0, (a, b) -> a + b);
+                .map(TireWear::runden).reduce(0, (a, b) -> a + b);
     }
 
-    public Collection<TyreType> tyreTypes() {
+    public Collection<TireType> tireTypes() {
         return sessions.stream() //
-                .map(Session::tyreTypes) //
+                .map(Session::tireTypes) //
                 .flatMap(Collection::stream) //
                 .sorted() //
                 .collect(toList());
     }
 
-    public String formattedTyreTypes() {
-        List<TyreTypeCount> tyres = tyreTypes().stream() //
+    public String formattedTireTypes() {
+        List<TireTypeCount> tires = tireTypes().stream() //
                 .distinct() //
                 .map(type -> {
-                    long count = tyreTypes().stream() //
+                    long count = tireTypes().stream() //
                             .filter(tType -> tType == type) //
                             .count();
-                    return new TyreTypeCount(type, Long.valueOf(count).intValue());
+                    return new TireTypeCount(type, Long.valueOf(count).intValue());
                 }) //
                 .collect(toList());
 
-        return "needed tyres: " + tyres.stream() //
+        return "needed tyres: " + tires.stream() //
                 .sorted((a, b) -> a.type.compareTo(b.type)) //
-                .map(TyreTypeCount::formatted) //
+                .map(TireTypeCount::formatted) //
                 .reduce("", (a, b) -> a + " " + b);
     }
 
-    public String formattedTotalTyreTypes() {
+    public String formattedTotalTireTypes() {
         // anteilsmässig erhöhen bis auf total tyrecount
-        List<TyreTypeCount> tyres = tyreTypes().stream() //
+        List<TireTypeCount> tires = tireTypes().stream() //
                 .distinct() //
                 .map(type -> {
-                    long count = tyreTypes().stream() //
+                    long count = tireTypes().stream() //
                             .filter(tType -> tType == type) //
                             .count();
-                    return new TyreTypeCount(type, Long.valueOf(count).intValue());
+                    return new TireTypeCount(type, Long.valueOf(count).intValue());
                 }) //
                 .collect(toList());
 
-        int summe = tyres.stream().map(TyreTypeCount::count).reduce(0, (a, b) -> a + b);
+        int summe = tires.stream().map(TireTypeCount::count).reduce(0, (a, b) -> a + b);
 
-        BigDecimal faktor = new BigDecimal(totalTyreCount).divide(new BigDecimal(summe), new MathContext(24));
-        List<TyreTypeCount> anteilTyres = tyres.stream() //
-                .map(tyre -> {
+        BigDecimal faktor = new BigDecimal(totalTireCount).divide(new BigDecimal(summe), new MathContext(24));
+        List<TireTypeCount> anteilTires = tires.stream() //
+                .map(tire -> {
                     int anteilCount =
-                            faktor.multiply(new BigDecimal(tyre.count())).round(new MathContext(0)).intValue();
-                    return new TyreTypeCount(tyre.type, anteilCount);
+                            faktor.multiply(new BigDecimal(tire.count())).round(new MathContext(0)).intValue();
+                    return new TireTypeCount(tire.type, anteilCount);
                 }) //
                 .collect(toList());
 
-        int diff = totalTyreCount - anteilTyres.stream().map(TyreTypeCount::count).reduce(0, (a, b) -> a + b);
+        int diff = totalTireCount - anteilTires.stream().map(TireTypeCount::count).reduce(0, (a, b) -> a + b);
         if (diff > 0) {
-            TyreTypeCount min = anteilTyres.stream().sorted().findFirst().get();
-            TyreTypeCount diffCount = new TyreTypeCount(min.type, min.count() + diff);
-            anteilTyres.remove(min);
-            anteilTyres.add(diffCount);
+            TireTypeCount min = anteilTires.stream().sorted().findFirst().get();
+            TireTypeCount diffCount = new TireTypeCount(min.type, min.count() + diff);
+            anteilTires.remove(min);
+            anteilTires.add(diffCount);
         } else {
-            TyreTypeCount max = anteilTyres.stream().sorted(Collections.reverseOrder()).findFirst().get();
-            TyreTypeCount diffCount = new TyreTypeCount(max.type, max.count() + diff);
-            anteilTyres.remove(max);
-            anteilTyres.add(diffCount);
+            TireTypeCount max = anteilTires.stream().sorted(Collections.reverseOrder()).findFirst().get();
+            TireTypeCount diffCount = new TireTypeCount(max.type, max.count() + diff);
+            anteilTires.remove(max);
+            anteilTires.add(diffCount);
         }
 
-        return "total tyres: " + anteilTyres.stream() //
+        return "total tyres: " + anteilTires.stream() //
                 .sorted((a, b) -> a.type.compareTo(b.type)) //
-                .map(TyreTypeCount::formatted) //
+                .map(TireTypeCount::formatted) //
                 .reduce("", (a, b) -> a + " " + b);
     }
 
@@ -146,12 +146,12 @@ public class Strategy {
         return sessions == other.sessions;
     }
 
-    public static class TyreTypeCount implements Comparable<TyreTypeCount> {
+    public static class TireTypeCount implements Comparable<TireTypeCount> {
 
-        private final TyreType type;
+        private final TireType type;
         private final int count;
 
-        public TyreTypeCount(TyreType type, int count) {
+        public TireTypeCount(TireType type, int count) {
             this.type = checkNotNull(type);
             this.count = count;
         }
@@ -173,7 +173,7 @@ public class Strategy {
         }
 
         @Override
-        public int compareTo(TyreTypeCount o) {
+        public int compareTo(TireTypeCount o) {
             return ComparisonChain.start() //
                     .compare(count, o.count) //
                     .compare(type, o.type) //

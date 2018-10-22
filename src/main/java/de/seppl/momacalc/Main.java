@@ -19,14 +19,15 @@ import static com.google.common.base.Preconditions.checkArgument;
 import de.seppl.momacalc.argument.ArgumentParser;
 import de.seppl.momacalc.domain.Strategy;
 import de.seppl.momacalc.domain.session.Session;
-import de.seppl.momacalc.domain.tyre.Tyre;
-import de.seppl.momacalc.domain.tyre.TyreType;
-import de.seppl.momacalc.domain.tyre.TyreWear;
+import de.seppl.momacalc.domain.tyre.Tire;
+import de.seppl.momacalc.domain.tyre.TireType;
+import de.seppl.momacalc.domain.tyre.TireWear;
 
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println(String.format("init service with: '%s'...", StringUtils.join(args, " ")));
+        System.out.println();
+        System.out.println(String.format("service called with: '%s'", StringUtils.join(args, " ")));
 
         StrategyService service = initService(args);
         calc(service);
@@ -45,22 +46,26 @@ public class Main {
 
         AtomicInteger driver = new AtomicInteger(0);
         driverStrategies.forEach(driverStrats -> {
+            System.out.println();
             System.out.println("=================================");
             System.out.println("Strategies for driver " + driver.incrementAndGet());
             System.out.println("=================================");
 
             driverStrats.forEach(strategy -> {
                 int diffRounds = strategy.raceRounds() - service.runden();
+                System.out.println();
+                System.out.println("---------------------------------");
                 System.out.println("Strategy with " + diffRounds + " rounds spare");
                 System.out.println("---------------------------------");
-                System.out.println(strategy.formattedTyreTypes());
-                System.out.println(strategy.formattedTotalTyreTypes());
+                System.out.println(strategy.formattedTireTypes());
+                System.out.println(strategy.formattedTotalTireTypes());
+                System.out.println();
                 strategy.sessions().stream() //
                         .sorted((a, b) -> a.type().compareTo(b.type())) //
-                        .map(Session::formattedTyreTypes) //
+                        .map(Session::formattedTireTypes) //
                         .forEach(System.out::println);
-                System.out.println("---------------------------------");
             });
+            System.out.println();
         });
     }
 
@@ -69,24 +74,24 @@ public class Main {
         ArgumentParser argsParser = new ArgumentParser(args);
 
         int runden = argsParser.parse(arguments.runden());
-        int count = argsParser.parse(arguments.tyreCount());
+        int count = argsParser.parse(arguments.tireCount());
 
-        SortedSet<TyreType> types = argsParser.parse(arguments.tyreTypes());
-        List<TyreWear> wears = argsParser.parse(arguments.tyreWears());
+        SortedSet<TireType> types = argsParser.parse(arguments.tireTypes());
+        List<TireWear> wears = argsParser.parse(arguments.tireWears());
         checkArgument(wears.size() % types.size() == 0,
                 "Es müssen entsprechend viele Wears angegeben werden, wie Types!");
 
-        Collection<Set<Tyre>> driverTyres = new ArrayList<>();
+        Collection<Set<Tire>> driverTires = new ArrayList<>();
         for (int i = 0; i < wears.size(); i = i + 3) {
-            Iterator<TyreType> iterator = types.iterator();
+            Iterator<TireType> iterator = types.iterator();
             int j = 0;
-            Set<Tyre> tyres = new HashSet<>();
+            Set<Tire> tires = new HashSet<>();
             while (iterator.hasNext()) {
-                tyres.add(new Tyre(iterator.next(), wears.get(i + j)));
+                tires.add(new Tire(iterator.next(), wears.get(i + j)));
                 j++;
             }
-            driverTyres.add(tyres);
+            driverTires.add(tires);
         }
-        return new StrategyService(driverTyres, runden, count);
+        return new StrategyService(driverTires, runden, count);
     }
 }

@@ -17,25 +17,25 @@ import static com.google.common.base.Preconditions.checkArgument;
 import de.seppl.momacalc.domain.Strategy;
 import de.seppl.momacalc.domain.session.Session;
 import de.seppl.momacalc.domain.session.SessionType;
-import de.seppl.momacalc.domain.tyre.Tyre;
-import de.seppl.momacalc.domain.tyre.TyreType;
-import de.seppl.momacalc.domain.tyre.TyreWear;
+import de.seppl.momacalc.domain.tyre.Tire;
+import de.seppl.momacalc.domain.tyre.TireType;
+import de.seppl.momacalc.domain.tyre.TireWear;
 
 /**
  * @author Seppl
  */
 public class StrategyService {
 
-    private final Collection<Set<Tyre>> driverTyres;
+    private final Collection<Set<Tire>> driverTires;
     private final int runden;
     private final int count;
 
-    public StrategyService(Collection<Set<Tyre>> driverTyres, int runden, int count) {
-        this.driverTyres = driverTyres;
+    public StrategyService(Collection<Set<Tire>> driverTires, int runden, int count) {
+        this.driverTires = driverTires;
         this.runden = runden;
         this.count = count;
-        checkArgument(!driverTyres.isEmpty());
-        checkArgument(!driverTyres.iterator().next().isEmpty());
+        checkArgument(!driverTires.isEmpty());
+        checkArgument(!driverTires.iterator().next().isEmpty());
     }
 
     public int runden() {
@@ -43,15 +43,15 @@ public class StrategyService {
     }
 
     public List<Strategy> strategies(int rundenSparen) {
-        List<Strategy> strategies = driverTyres.stream() //
-                .map(tyres -> strategy(rundenSparen, tyres)) //
+        List<Strategy> strategies = driverTires.stream() //
+                .map(tires -> strategy(rundenSparen, tires)) //
                 .collect(toList());
 
-        List<TyreType> tTypes = strategies.stream() //
+        List<TireType> tTypes = strategies.stream() //
                 .map(Strategy::sessions) //
                 .flatMap(Collection::stream) //
                 .filter(session -> session.type() == SessionType.TRAINING) //
-                .map(Session::tyreTypes) //
+                .map(Session::tireTypes) //
                 .flatMap(Collection::stream) //
                 .distinct() //
                 .collect(toList());
@@ -61,31 +61,31 @@ public class StrategyService {
                 .flatMap(Collection::stream) //
                 .filter(session -> session.type() == SessionType.TRAINING) //
                 .forEach(session -> {
-                    session.tyreTypes().clear();
-                    session.tyreTypes().addAll(tTypes);
+                    session.tireTypes().clear();
+                    session.tireTypes().addAll(tTypes);
                 });
 
         return strategies;
     }
 
-    private Strategy strategy(int rundenSparen, Set<Tyre> tyres) {
-        TyreType qTyre = qTyreType(tyres);
-        List<TyreType> rTyres = rTyres(Optional.empty(), new ArrayList<Tyre>(), rundenSparen, tyres).stream() //
-                .map(Tyre::type) //
+    private Strategy strategy(int rundenSparen, Set<Tire> tires) {
+        TireType qTire = qTyreType(tires);
+        List<TireType> rTires = rTires(Optional.empty(), new ArrayList<Tire>(), rundenSparen, tires).stream() //
+                .map(Tire::type) //
                 .collect(toList());
-        List<TyreType> tTyres = tTyreType(tyres, qTyre, rTyres);
+        List<TireType> tTires = tTireType(tires, qTire, rTires);
 
         Collection<Session> sessions = new ArrayList<>();
-        sessions.add(new Session(SessionType.QUALIFYING, Arrays.asList(qTyre)));
-        sessions.add(new Session(SessionType.RACE, rTyres));
-        sessions.add(new Session(SessionType.TRAINING, tTyres));
+        sessions.add(new Session(SessionType.QUALIFYING, Arrays.asList(qTire)));
+        sessions.add(new Session(SessionType.RACE, rTires));
+        sessions.add(new Session(SessionType.TRAINING, tTires));
 
-        return new Strategy(sessions, count, tyres);
+        return new Strategy(sessions, count, tires);
     }
 
-    private TyreType qTyreType(Collection<Tyre> tyres) {
-        return tyres.stream() //
-                .map(Tyre::type) //
+    private TireType qTyreType(Collection<Tire> tires) {
+        return tires.stream() //
+                .map(Tire::type) //
                 .sorted() //
                 .findFirst() //
                 .get();
@@ -94,17 +94,17 @@ public class StrategyService {
     // auf jeder ebene gibts tyres.size() (3) möglichkeiten
     // der kürzeste weg der am nächsten an 0 rankommt wird genommen,
     // wenns mehrere gibt, dann der mit den meisten weichsten reifen
-    private List<Tyre> rTyres(Optional<Tyre> lastTyre, List<Tyre> strategy, int rundenSparen, Collection<Tyre> tyres) {
-        lastTyre.ifPresent(strategy::add);
+    private List<Tire> rTires(Optional<Tire> lastTire, List<Tire> strategy, int rundenSparen, Collection<Tire> tires) {
+        lastTire.ifPresent(strategy::add);
         int strategyRunden = strategy.stream() //
-                .map(Tyre::wear) //
-                .map(TyreWear::runden) //
+                .map(Tire::wear) //
+                .map(TireWear::runden) //
                 .reduce(0, (a, b) -> a + b);
         if (strategy.size() >= 10 || strategyRunden >= runden - rundenSparen) {
             return strategy;
         }
-        return tyres.stream() //
-                .map(tyre -> rTyres(Optional.of(tyre), new ArrayList<>(strategy), rundenSparen, tyres)) //
+        return tires.stream() //
+                .map(tire -> rTires(Optional.of(tire), new ArrayList<>(strategy), rundenSparen, tires)) //
                 .sorted((a, b) -> ComparisonChain.start() //
                         .compare(a.size(), b.size()) //
                         .compare(tyreTypes(a), tyreTypes(b)) //
@@ -113,21 +113,21 @@ public class StrategyService {
                 .get();
     }
 
-    private int tyreTypes(Collection<Tyre> tyres) {
-        return tyres.stream() //
-                .map(Tyre::type) //
+    private int tyreTypes(Collection<Tire> tires) {
+        return tires.stream() //
+                .map(Tire::type) //
                 .map(Enum::ordinal) //
                 .reduce(0, (a, b) -> a + b);
     }
 
-    private List<TyreType> tTyreType(Collection<Tyre> tyres, TyreType qTyreType, List<TyreType> rTyres) {
-        Set<TyreType> tTyreTypes = rTyres.stream() //
+    private List<TireType> tTireType(Collection<Tire> tires, TireType qTireType, List<TireType> rTires) {
+        Set<TireType> tTireTypes = rTires.stream() //
                 .distinct() //
                 .collect(toSet());
-        tTyreTypes.add(qTyreType);
-        return tyres.stream() //
-                .map(Tyre::type) //
-                .filter(tyreType -> tTyreTypes.contains(tyreType)) //
+        tTireTypes.add(qTireType);
+        return tires.stream() //
+                .map(Tire::type) //
+                .filter(tTireTypes::contains) //
                 .collect(toList());
     }
 }

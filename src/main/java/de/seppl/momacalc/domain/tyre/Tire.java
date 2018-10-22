@@ -9,21 +9,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @author Seppl
  */
-public class Tyre {
+public class Tire {
 
-    private final TyreType type;
-    private final TyreWear wear;
+    private final TireType type;
+    private final TireWear wear;
 
-    public Tyre(TyreType type, TyreWear wear) {
+    public Tire(TireType type, TireWear wear) {
         this.type = checkNotNull(type);
         this.wear = checkNotNull(wear);
     }
 
-    public TyreType type() {
+    public TireType type() {
         return type;
     }
 
-    public TyreWear wear() {
+    public TireWear wear() {
         return wear;
     }
 
@@ -45,7 +45,7 @@ public class Tyre {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Tyre other = (Tyre) obj;
+        Tire other = (Tire) obj;
         return type.equals(other.type) //
                 && wear.equals(other.wear);
     }

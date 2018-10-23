@@ -47,7 +47,7 @@ public class Strategy {
         return session(SessionType.RACE).tires().stream() //
                 .map(Tire::wear) //
                 .map(TireWear::runden) //
-                .reduce(0, (a, b) -> a + b);
+                .reduce(0, Integer::sum);
     }
 
     public Collection<TireType> tireTypes() {
@@ -73,7 +73,7 @@ public class Strategy {
         return "needed tyres: " + tires.stream() //
                 .sorted((a, b) -> a.type.compareTo(b.type)) //
                 .map(TireTypeCount::formatted) //
-                .reduce("", (a, b) -> a + " " + b);
+                .reduce("", String::concat);
     }
 
     public String formattedTotalTireTypes() {
@@ -88,7 +88,7 @@ public class Strategy {
                 }) //
                 .collect(toList());
 
-        int summe = tires.stream().map(TireTypeCount::count).reduce(0, (a, b) -> a + b);
+        int summe = tires.stream().map(TireTypeCount::count).reduce(0, Integer::sum);
 
         BigDecimal faktor = new BigDecimal(totalTireCount).divide(new BigDecimal(summe), new MathContext(24));
         List<TireTypeCount> anteilTires = tires.stream() //
@@ -99,7 +99,7 @@ public class Strategy {
                 }) //
                 .collect(toList());
 
-        int diff = totalTireCount - anteilTires.stream().map(TireTypeCount::count).reduce(0, (a, b) -> a + b);
+        int diff = totalTireCount - anteilTires.stream().map(TireTypeCount::count).reduce(0, Integer::sum);
         if (diff > 0) {
             TireTypeCount min = anteilTires.stream().sorted().findFirst().get();
             TireTypeCount diffCount = new TireTypeCount(min.type, min.count() + diff);
@@ -115,7 +115,7 @@ public class Strategy {
         return "total tyres: " + anteilTires.stream() //
                 .sorted((a, b) -> a.type.compareTo(b.type)) //
                 .map(TireTypeCount::formatted) //
-                .reduce("", (a, b) -> a + " " + b);
+                .reduce("", String::concat);
     }
 
     @Override

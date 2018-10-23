@@ -13,6 +13,7 @@ import static java.util.stream.Collectors.toSet;
 import com.google.common.collect.ComparisonChain;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import de.seppl.momacalc.domain.Strategy;
 import de.seppl.momacalc.domain.session.Session;
@@ -30,7 +31,7 @@ public class StrategyService {
     private final int count;
 
     public StrategyService(Collection<Set<Tire>> driverTires, int runden, int count) {
-        this.driverTires = driverTires;
+        this.driverTires = checkNotNull(driverTires);
         this.runden = runden;
         this.count = count;
         checkArgument(!driverTires.isEmpty());
@@ -96,7 +97,7 @@ public class StrategyService {
         int strategyRunden = strategy.stream() //
                 .map(Tire::wear) //
                 .map(TireWear::runden) //
-                .reduce(0, (a, b) -> a + b);
+                .reduce(0, Integer::sum);
         if (strategy.size() >= 10 || strategyRunden >= runden - rundenSparen) {
             return strategy;
         }
@@ -114,7 +115,7 @@ public class StrategyService {
         return tires.stream() //
                 .map(Tire::type) //
                 .map(Enum::ordinal) //
-                .reduce(0, (a, b) -> a + b);
+                .reduce(0, Integer::sum);
     }
 
     private Set<Tire> tTire(Collection<Tire> tires, Tire qTire, List<Tire> rTires) {

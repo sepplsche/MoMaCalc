@@ -40,7 +40,7 @@ public class ArgumentParserTest {
         List<Integer> ints = parser.parse(arg);
         assertThat(ints.size(), is(4));
 
-        int summe = ints.stream().reduce(0, (a, b) -> a + b);
+        int summe = ints.stream().reduce(0, Integer::sum);
         assertThat(summe, is(10));
     }
 

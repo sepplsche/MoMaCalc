@@ -43,7 +43,7 @@ public class Arguments {
     }
 
     private SortedSet<TireType> argToTireTypes(List<String> args) {
-        String arg = args.stream().reduce("", (a, b) -> a + b);
+        String arg = args.stream().reduce("", String::concat);
         SortedSet<TireType> types = new TreeSet<>();
         if (arg.toLowerCase().contains("sss")) {
             types.add(TireType.SUPERSOFT);

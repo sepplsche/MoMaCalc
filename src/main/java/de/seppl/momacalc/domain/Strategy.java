@@ -155,7 +155,7 @@ public class Strategy {
         }
 
         public String formatted() {
-            return count + type.abr();
+            return count + type.abr() + " ";
         }
 
         @Override

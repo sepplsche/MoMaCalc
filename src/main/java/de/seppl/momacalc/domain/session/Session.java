@@ -35,7 +35,7 @@ public class Session {
     public String formattedTires() {
         return "tires for session " + type + ": " + tires.stream() //
                 .sorted() //
-                .map(tire -> type == SessionType.RACE ? tire.formatted() : tire.type().abr()) //
+                .map(tire -> (type == SessionType.RACE ? tire.formatted() : tire.type().abr()) + " ") //
                 .reduce("", String::concat);
     }
 

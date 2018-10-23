@@ -72,7 +72,6 @@ public class Main {
     private static StrategyService initService(String[] args) {
         Arguments arguments = new Arguments();
         ArgumentParser argsParser = new ArgumentParser(args);
-
         int runden = argsParser.parse(arguments.runden());
         int count = argsParser.parse(arguments.tireCount());
 

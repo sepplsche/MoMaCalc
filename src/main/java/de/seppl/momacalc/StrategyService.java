@@ -6,8 +6,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import com.google.common.collect.ComparisonChain;
@@ -123,6 +126,9 @@ public class StrategyService {
                 .distinct() //
                 .collect(toSet());
         tTires.add(qTire);
-        return tTires;
+
+        return new TreeSet<>(tTires.stream() //
+                .collect(toMap(Tire::type, Function.identity())) //
+                .values());
     }
 }

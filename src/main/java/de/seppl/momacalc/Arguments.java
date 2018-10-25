@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.seppl.momacalc.argument.Argument;
 import de.seppl.momacalc.argument.Argument.MandatoryArgument;
 import de.seppl.momacalc.argument.Argument.OptionalArgument;
@@ -35,11 +37,8 @@ public class Arguments {
         return new MandatoryArgument<>("-tw", this::argToTireWears);
     }
 
-    private int argToInt(Collection<String> arg) {
-        return arg.stream() //
-                .map(Integer::parseInt) //
-                .findFirst() //
-                .get();
+    private int argToInt(Collection<String> args) {
+        return args.stream().findFirst().map(Integer::parseInt).get();
     }
 
     private SortedSet<TireType> argToTireTypes(List<String> args) {
@@ -63,6 +62,8 @@ public class Arguments {
 
     private List<TireWear> argToTireWears(List<String> args) {
         return args.stream() //
+                .map(arg -> StringUtils.split(arg, " ")) //
+                .flatMap(Stream::of) //
                 .map(Integer::parseInt) //
                 .map(TireWear::new) //
                 .collect(toList());

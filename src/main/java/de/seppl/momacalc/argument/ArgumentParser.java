@@ -14,11 +14,11 @@ public class ArgumentParser {
 
     private final Map<String, List<String>> args;
 
-    public ArgumentParser(String[] args) {
+    public ArgumentParser(Collection<String> args) {
         this.args = parse(args);
     }
 
-    private Map<String, List<String>> parse(String[] args) {
+    private Map<String, List<String>> parse(Collection<String> args) {
         Map<String, List<String>> argsMap = new HashMap<>();
 
         String lastArg = null;

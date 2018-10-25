@@ -1,5 +1,6 @@
 package de.seppl.momacalc.argument;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class ArgumentParserTest {
     @Test
     public void twoArgs() throws Exception {
 
-        String[] args = new String[] {"-f", "F:\\Seppl PF Konto", "-r", "33"};
+        Collection<String> args = Arrays.asList("-f", "F:\\Seppl PF Konto", "-r", "33");
 
         ArgumentParser parser = new ArgumentParser(args);
         Arguments arguments = new Arguments();
@@ -31,7 +32,7 @@ public class ArgumentParserTest {
 
     @Test
     public void duplicateArgs() throws Exception {
-        String[] args = new String[] {"-arg", "1", "2", "-d", "2013-01-01", "-arg", "3", "4"};
+        Collection<String> args = Arrays.asList("-arg", "1", "2", "-d", "2013-01-01", "-arg", "3", "4");
         Argument<List<Integer>> arg =
                 new MandatoryArgument<>("-arg", (a -> a.stream().map(Integer::valueOf).collect(toList())));
 
@@ -46,7 +47,7 @@ public class ArgumentParserTest {
 
     @Test
     public void argTyreWear() throws Exception {
-        String[] args = new String[] {"-tw", "7", "11", "16", "8", "15", "17"};
+        Collection<String> args = Arrays.asList("-tw", "7", "11", "16", "8", "15", "17");
 
         ArgumentParser parser = new ArgumentParser(args);
         Arguments arguments = new Arguments();

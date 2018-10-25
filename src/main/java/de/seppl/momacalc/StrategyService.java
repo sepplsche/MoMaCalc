@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -27,7 +29,7 @@ import de.seppl.momacalc.domain.tire.TireWear;
 /**
  * @author Seppl
  */
-public class StrategyService {
+public class StrategyService implements Service {
 
     private final Collection<Set<Tire>> driverTires;
     private final int runden;
@@ -130,5 +132,42 @@ public class StrategyService {
         return new TreeSet<>(tTires.stream() //
                 .collect(toMap(Tire::type, Function.identity())) //
                 .values());
+    }
+
+    @Override
+    public void calc() {
+        List<List<Strategy>> strategies = IntStream.of(-2, 0, 2) //
+                .mapToObj(this::strategies) //
+                .collect(toList());
+        int drivers = strategies.get(0).size();
+        List<List<Strategy>> driverStrategies = IntStream.range(0, drivers) //
+                .mapToObj(driver -> strategies.stream() //
+                        .map(strat -> strat.get(driver)) //
+                        .collect(toList())) //
+                .collect(toList());
+
+        AtomicInteger driver = new AtomicInteger(0);
+        driverStrategies.forEach(driverStrats -> {
+            System.out.println();
+            System.out.println("=================================");
+            System.out.println("Strategies for driver " + driver.incrementAndGet());
+            System.out.println("=================================");
+
+            driverStrats.forEach(strategy -> {
+                int diffRounds = strategy.raceRounds() - runden();
+                System.out.println();
+                System.out.println("---------------------------------");
+                System.out.println("Strategy with " + diffRounds + " rounds spare");
+                System.out.println("---------------------------------");
+                System.out.println(strategy.formattedTireTypes());
+                System.out.println(strategy.formattedTotalTireTypes());
+                System.out.println();
+                strategy.sessions().stream() //
+                        .sorted((a, b) -> a.type().compareTo(b.type())) //
+                        .map(Session::formattedTires) //
+                        .forEach(System.out::println);
+            });
+            System.out.println();
+        });
     }
 }

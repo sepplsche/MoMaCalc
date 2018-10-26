@@ -1,5 +1,7 @@
 package de.seppl.momacalc.domain.race;
 
+import java.util.stream.Stream;
+
 /**
  * @author Seppl
  */
@@ -19,5 +21,12 @@ public enum DriveMode {
 
     public int level() {
         return level;
+    }
+
+    public static DriveMode of(int level) {
+        return Stream.of(DriveMode.values()) //
+                .filter(value -> value.level() == level) //
+                .findFirst() //
+                .get();
     }
 }

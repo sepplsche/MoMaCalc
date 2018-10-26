@@ -10,8 +10,6 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
-import org.apache.commons.lang.StringUtils;
-
 import de.seppl.momacalc.argument.Argument;
 import de.seppl.momacalc.argument.Argument.MandatoryArgument;
 import de.seppl.momacalc.argument.Argument.OptionalArgument;
@@ -62,9 +60,7 @@ public class Arguments {
 
     private List<TireWear> argToTireWears(List<String> args) {
         return args.stream() //
-                .map(arg -> StringUtils.split(arg, " ")) //
-                .flatMap(Stream::of) //
-                .map(Integer::parseInt) //
+                .map(Integer::valueOf) //
                 .map(TireWear::new) //
                 .collect(toList());
     }

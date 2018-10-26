@@ -6,6 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
+
+import org.apache.commons.lang.StringUtils;
 
 import de.seppl.momacalc.argument.Argument.MandatoryArgument;
 import de.seppl.momacalc.argument.Argument.OptionalArgument;
@@ -23,6 +28,8 @@ public class ArgumentParser {
 
         String lastArg = null;
         Collection<String> lastParams = new ArrayList<>();
+
+        args = args.stream().map(StringUtils::split).flatMap(Stream::of).collect(toList());
 
         for (String arg : args) {
             if (arg.startsWith("-")) {

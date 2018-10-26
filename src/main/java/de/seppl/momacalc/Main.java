@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -25,7 +26,10 @@ import de.seppl.momacalc.domain.tire.TireWear;
 
 public class Main {
 
+    private static final Path ARGS_FILE = Paths.get("C:/dev/git-repos/MoMaCalc/target/moma.args");
+
     public static void main(String[] argArr) {
+
         Collection<String> args = readFileInput();
         args = readUserInputStrategy(args);
         saveFileInput(args);
@@ -35,27 +39,15 @@ public class Main {
 
         Service service = initStrategyService(arguments, argsParser);
         service.calc();
-
-        String exit = "";
-        while (exit.length() == 0) {
-            args = readFileInput();
-            args = readUserInputRace(args);
-            saveFileInput(args);
-
-            service = initRaceService(arguments, argsParser);
-            service.calc();
-
-            exit = readUserInputExit();
-        }
     }
 
     private static Collection<String> readUserInputStrategy(Collection<String> args) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            System.out.print("Rounds: ");
+            System.out.print("Total Race Rounds: ");
             String rounds = reader.readLine();
-            System.out.print("Count: ");
+            System.out.print("Total Tire Count: ");
             String count = reader.readLine();
             System.out.print("Tire Types: ");
             String types = reader.readLine();
@@ -84,66 +76,11 @@ public class Main {
         }
     }
 
-    private static Collection<String> readUserInputRace(Collection<String> args) {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-            System.out.print("Drive Mode: ");
-            String driverMode = reader.readLine();
-            System.out.print("Tire Used: ");
-            String tireUsed = reader.readLine();
-            System.out.print("Tire Left: ");
-            String tireLeft = reader.readLine();
-            System.out.print("Motor Mode: ");
-            String motorMode = reader.readLine();
-            System.out.print("Fuel Used: ");
-            String fuelUsed = reader.readLine();
-            System.out.print("Fuel Left: ");
-            String fuelLeft = reader.readLine();
-
-            if (!Strings.isNullOrEmpty(driverMode)) {
-                args.removeIf(arg -> arg.startsWith("-dm"));
-                args.add("-dm " + driverMode);
-            }
-            if (!Strings.isNullOrEmpty(tireUsed)) {
-                args.removeIf(arg -> arg.startsWith("-tu"));
-                args.add("-tu " + tireUsed);
-            }
-            if (!Strings.isNullOrEmpty(tireLeft)) {
-                args.removeIf(arg -> arg.startsWith("-tl"));
-                args.add("-tl " + tireLeft);
-            }
-            if (!Strings.isNullOrEmpty(motorMode)) {
-                args.removeIf(arg -> arg.startsWith("-m"));
-                args.add("-mm " + motorMode);
-            }
-            if (!Strings.isNullOrEmpty(fuelUsed)) {
-                args.removeIf(arg -> arg.startsWith("-fu"));
-                args.add("-fu " + fuelUsed);
-            }
-            if (!Strings.isNullOrEmpty(fuelLeft)) {
-                args.removeIf(arg -> arg.startsWith("-fl"));
-                args.add("-fl " + fuelLeft);
-            }
-            return args;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String readUserInputExit() {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.print("Exit: ");
-            return reader.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private static Collection<String> readFileInput() {
         try {
-            return Files.readAllLines(Paths.get("moma.args"));
+            return Files.exists(ARGS_FILE) //
+                    ? Files.readAllLines(ARGS_FILE) //
+                    : new ArrayList<>();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -151,10 +88,11 @@ public class Main {
 
     private static void saveFileInput(Collection<String> args) {
         try {
-            Files.write(Paths.get("moma.args"), args, //
+            Files.write(ARGS_FILE, args, //
                     StandardOpenOption.CREATE, //
                     StandardOpenOption.WRITE, //
                     StandardOpenOption.TRUNCATE_EXISTING);
+            System.out.println("saved args: " + args);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -183,9 +121,5 @@ public class Main {
             driverTires.add(tires);
         }
         return new StrategyService(driverTires, runden, count);
-    }
-
-    private static Service initRaceService(Arguments arguments, ArgumentParser argsParser) {
-        return new RaceService();
     }
 }
